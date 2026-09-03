@@ -23,7 +23,7 @@
 
 Most modern web code editors are wrappers around pre-existing powerhouses like Monaco (VS Code) or CodeMirror. While convenient, using those black-box abstractions skips over the most fascinating computer science challenges in systems and GUI development:
 
-- _How does an editor store and edit gigabytes of text in constant time without string allocations?_
+- _How does an editor store and edit gigabytes of text in constant time without memory fragmentation?_
 - _How do you render crisp, sub-pixel monospace glyphs on high-DPI screens without relying on DOM elements?_
 - _How do coordinate spaces translate between linear byte offsets, logical lines, and visual wrapped display cells?_
 - _How do language servers (LSP), tokenizers, and formatting engines communicate asynchronously inside Web Workers?_
@@ -45,20 +45,41 @@ Most modern web code editors are wrappers around pre-existing powerhouses like M
 
 ## 🗺️ Implementation Roadmap
 
-| Phase        | Milestone                            | Status | Key Deliverables & Focus                                                                                 |
-| :----------- | :----------------------------------- | :----: | :------------------------------------------------------------------------------------------------------- |
-| **Phase 0**  | **Canvas Foundation & Input Bridge** | `DONE` | Retina canvas scaling (`devicePixelRatio`), hidden `<textarea>` proxy, monospace grid arithmetic         |
-| **Phase 1**  | **The Naive Buffer**                 | `NEXT` | `Buffer` interface, `StringBuffer`, line start offsets, offset $\leftrightarrow$ `(row, col)` conversion |
-| **Phase 2**  | **Cursor Engine & Sticky Column**    | `TODO` | Multi-cursor data model (`Selection[]`), arrow navigation, sticky column, 4-space tab expansion          |
-| **Phase 3**  | **Mouse & Selections**               | `TODO` | Click-to-offset hit testing, drag-to-select, double/triple click, clipboard synchronization              |
-| **Phase 4**  | **Piece Table Architecture**         | `TODO` | Append-only original & add buffers, piece descriptors, $O(1)$ append insertions, span splitting          |
-| **Phase 5**  | **Undo / Redo History**              | `TODO` | Command pattern (`InsertCommand`, `DeleteCommand`), typing coalescing, dual undo stacks                  |
-| **Phase 6**  | **Layout & Word Wrap**               | `TODO` | Three coordinate spaces mapping, soft word wrap layout, cursor traversal across wrapped rows             |
-| **Phase 7**  | **Viewport Virtualization**          | `TODO` | Visible line slicing, kinetic scrolling & scrollbars, line number gutter, active line highlight          |
-| **Phase 8**  | **Syntax Highlighting**              | `TODO` | Tokenizer & lexer integration, scoped theme resolver, decorations layer (squiggles, highlights)          |
-| **Phase 9**  | **Language Server Protocol (LSP)**   | `TODO` | Web Worker JSON-RPC transport, document sync, hover tooltips, diagnostics                                |
-| **Phase 10** | **Autocompletion & Formatting**      | `TODO` | Fuzzy completion popup, snippet expansion, in-browser code formatting (Prettier/Biome in Worker)         |
-| **Phase 11** | **Multi-Cursor Engine & Polish**     | `TODO` | True simultaneous multi-caret editing, overlapping cursor coalescing, command palette                    |
+```
+Progress: [■□□□□□□□□□□□] 1 / 12 Milestones Completed (8%)
+```
+
+### 🧱 Tier 1: Core Buffer & Rendering Engine
+
+| Phase  | Milestone                         |      Status      | Key Deliverables                                                                                                |
+| :----: | :-------------------------------- | :--------------: | :-------------------------------------------------------------------------------------------------------------- |
+| **00** | **Canvas Baseline & Input Proxy** |  `🟢 COMPLETED`  | High-DPI canvas scaling (`devicePixelRatio`), hidden `<textarea>` input proxy, monospace arithmetic             |
+| **01** | **The Naive Buffer**              | `🟡 IN PROGRESS` | `Buffer` interface, `StringBuffer`, line offsets array, linear offset $\leftrightarrow$ `(row, col)` conversion |
+| **02** | **Cursor & Navigation**           |   `⚪ PLANNED`   | Multi-cursor selection vector (`Selection[]`), arrow navigation, sticky column, 4-space tab expansion           |
+| **03** | **Mouse & Selections**            |   `⚪ PLANNED`   | Click-to-offset hit testing, drag selection, double/triple click (word/line), clipboard synchronization         |
+
+### ⚡ Tier 2: Production Data Structures & History
+
+| Phase  | Milestone                    |    Status    | Key Deliverables                                                                                        |
+| :----: | :--------------------------- | :----------: | :------------------------------------------------------------------------------------------------------ |
+| **04** | **Piece Table Architecture** | `⚪ PLANNED` | Append-only original & add buffers, piece descriptor indexing, $O(1)$ append insertions, span splitting |
+| **05** | **Undo / Redo Engine**       | `⚪ PLANNED` | Command pattern (`InsertCommand`, `DeleteCommand`), edit coalescing, dual-stack history model           |
+
+### 📐 Tier 3: Layout & Virtualized Viewport
+
+| Phase  | Milestone                   |    Status    | Key Deliverables                                                                                                                 |
+| :----: | :-------------------------- | :----------: | :------------------------------------------------------------------------------------------------------------------------------- |
+| **06** | **Layout & Word Wrap**      | `⚪ PLANNED` | 3 coordinate spaces mapping (Offset $\leftrightarrow$ Logical $\leftrightarrow$ Visual), soft word wrap layout, cursor traversal |
+| **07** | **Viewport Virtualization** | `⚪ PLANNED` | Visible line slicing, kinetic scrolling & scrollbars, line number gutter, active line highlight                                  |
+
+### 🧠 Tier 4: Language Tooling & Code Intelligence
+
+| Phase  | Milestone                          |    Status    | Key Deliverables                                                                                   |
+| :----: | :--------------------------------- | :----------: | :------------------------------------------------------------------------------------------------- |
+| **08** | **Syntax Highlighting**            | `⚪ PLANNED` | Tokenizer & lexer integration, scoped theme resolver, decorations layer (squiggles, highlights)    |
+| **09** | **Language Server Protocol (LSP)** | `⚪ PLANNED` | Web Worker JSON-RPC transport, document synchronization, hover tooltips & diagnostics              |
+| **10** | **Autocompletion & Formatting**    | `⚪ PLANNED` | Fuzzy completion popup, snippet expansion, in-browser code formatting (Prettier / Biome in Worker) |
+| **11** | **Multi-Cursor Engine & Polish**   | `⚪ PLANNED` | True simultaneous multi-caret editing, overlapping cursor coalescing, command palette              |
 
 ---
 
